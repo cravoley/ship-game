@@ -33,7 +33,7 @@
       }
       ship = ship[0];
       shipSize = {x:50, y:143};
-      $(canvas).on('mousemove',moveShip);      
+      $(canvas).on('mousemove',moveShip);
       setCanvasSize();
       // TODO: version 1.1 should allow the ship to move back and forward
       position.y = canvasSize.y-shipSize.y; // this is fixed by now
@@ -65,8 +65,6 @@
     init();
   }
   $(document).ready(function(){
-
-    console.log("LOAD");
     game();
   });
 })();
