@@ -1,21 +1,12 @@
 (function () {
 	// TODO: implement other kind of weapons
-	var WEAPON = {
-		single: {
-			type: "single",
-			speed: 15,
-			damage: 1
-		},
-		missile: {
-			type: "missile",
-			speed: 25,
-			damage: 5
-		}
-	};
+	var WEAPONS;
+	var ALIENS;
+
 
 	function Game(canvas) {
-		var canvas = canvas;
-		var ctx;
+		this.canvas = canvas;
+		this.ctx;
 		var position = {x: 0, y: 0};
 		var ship;
 		var shipSize = {x: 0, y: 0};
@@ -23,15 +14,17 @@
 		var shoots = [];
 		var shootsTimeout;
 
-		var init = function () {
-			//canvas = $("#game");
-			// TODO: manage to have more than one game in the same screen?
-			//if (canvas.size() != 1) {
-			//	console.error("Unable to find a valid canvas to start with");
-			//	return;
-			//}
-			//canvas = canvas[0]; // get first canvas
-
+		var game = this;
+		this.init = function () {
+			var prepareGameData = function () {
+				game.loadJson("data/weapons.json", function (data) {
+					WEAPONS = data;
+				});
+				game.loadJson("data/enemies.json", function (data) {
+					ALIENS = data;
+				});
+			};
+			prepareGameData();
 
 			// get body size
 			var documentSize = {x: $("body").width(), y: $("body").height()};
@@ -49,27 +42,27 @@
 			}
 			ship = ship[0];
 			shipSize = {x: 50, y: 143};
-			$(canvas).on('mousemove', moveShip);
-			$(canvas).on('contextmenu', fire);
-			$(canvas).on('mousedown', fire);
+			$(canvas).on('mousemove', game.moveShip);
+			$(canvas).on('contextmenu', game.fire);
+			$(canvas).on('mousedown', game.fire);
 			setCanvasSize();
 			// TODO: version 1.1 should allow the ship to move back and forward
 			position.y = canvasSize.y - shipSize.y; // this is fixed by now
 			// set ship to initial position
-			moveShip();
+			game.moveShip();
 			//setInterval(updateBulletsPosition, 100);
 		};
 
 		// utility class to replace old ship placement
-		var eraseShip = function () {
+		this.eraseShip = function () {
 			ctx.fillStyle = "#000";
 			ctx.fillRect(position.x, position.y, shipSize.x, shipSize.y);
 		};
 
-		var moveShip = function (event) {
+		this.moveShip = function (event) {
 			// TODO: set max movement distance by ship type. Implement other ships
-			eraseShip();
 			if (event != null) {
+				game.eraseShip();
 				if (!event.layerX && event.originalEvent) {
 					event = event.originalEvent;
 				}
@@ -82,19 +75,19 @@
 			}
 			ctx.drawImage(ship, position.x, position.y);
 		};
-		var fire = function (event) {
+		this.fire = function (event) {
 			console.log(event.button);
 			if (event.button == 0) {
-				shoots.push({x: position.x, y: position.y, weapon: WEAPON.single});
+				shoots.push({x: position.x, y: position.y, weapon: WEAPONS.single});
 			} else if (event.button == 2) {
 				// right click, shoot missile
 				event.preventDefault();
-				shoots.push({x: position.x, y: position.y, weapon: WEAPON.missile});
+				shoots.push({x: position.x, y: position.y, weapon: WEAPONS.missile});
 			}
 			if (!shootsTimeout)
-				shootsTimeout = setInterval(updateBulletsPosition, 100);
+				shootsTimeout = setInterval(game.updateBulletsPosition, 100);
 		};
-		var updateBulletsPosition = function () {
+		this.updateBulletsPosition = function () {
 			if (shoots && shoots.length > 0) {
 				var startIndex = 0;
 				var newBullets = [];
@@ -115,7 +108,14 @@
 				shootsTimeout = null;
 			}
 		};
-		init();
+		this.loadJson = function (path, callback) {
+			$.ajax({
+				dataType: "json",
+				url: path,
+				success: callback
+			});
+		};
+		this.init();
 	}
 
 	$(document).ready(function () {

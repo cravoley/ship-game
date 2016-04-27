@@ -18,3 +18,4 @@ Add some challenge
 All images were used as prototypes and were found on google searching for free images. If you own any image rights on it, let me know and I can either remove the image or give you the right credit.:
 Spaceship - https://pixabay.com/en/soyuz-launch-space-shuttle-1099402/
 Single shot - http://www.freepik.com/free-vector/bullet-vector--bullet-in-fire_687663.htm
+Alien - http://www.flaticon.com/free-icon/pixelated-alien_40761
