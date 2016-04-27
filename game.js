@@ -5,8 +5,8 @@
 
 
 	function Game(canvas) {
-		this.canvas = canvas;
-		this.ctx;
+		var canvas = canvas;
+		var ctx;
 		var position = {x: 0, y: 0};
 		var ship;
 		var shipSize = {x: 0, y: 0};
@@ -17,10 +17,10 @@
 		var game = this;
 		this.init = function () {
 			var prepareGameData = function () {
-				game.loadJson("data/weapons.json", function (data) {
+				loadJson("data/weapons.json", function (data) {
 					WEAPONS = data;
 				});
-				game.loadJson("data/enemies.json", function (data) {
+				loadJson("data/enemies.json", function (data) {
 					ALIENS = data;
 				});
 			};
@@ -76,7 +76,6 @@
 			ctx.drawImage(ship, position.x, position.y);
 		};
 		this.fire = function (event) {
-			console.log(event.button);
 			if (event.button == 0) {
 				shoots.push({x: position.x, y: position.y, weapon: WEAPONS.single});
 			} else if (event.button == 2) {
@@ -84,12 +83,10 @@
 				event.preventDefault();
 				shoots.push({x: position.x, y: position.y, weapon: WEAPONS.missile});
 			}
-			if (!shootsTimeout)
-				shootsTimeout = setInterval(game.updateBulletsPosition, 100);
+
 		};
 		this.updateBulletsPosition = function () {
 			if (shoots && shoots.length > 0) {
-				var startIndex = 0;
 				var newBullets = [];
 				var img = document.getElementById('bullet');
 				for (var i = 0; i < shoots.length; i++) {
@@ -98,29 +95,26 @@
 					// TODO: leave a trace after shooting
 					ctx.clearRect(shot.x, shot.y, img.width, img.height);
 					shot.y = shot.y - shot.weapon.speed;
-					console.debug(shot.y, canvasSize.y);
 					ctx.drawImage(img, shot.x, shot.y);
 					if (shot.y > 0 - img.height) newBullets.push(shot);
 				}
 				shoots = newBullets;
-			} else {
-				clearInterval(shootsTimeout);
-				shootsTimeout = null;
 			}
 		};
-		this.loadJson = function (path, callback) {
+		var loadJson = function (path, callback) {
 			$.ajax({
 				dataType: "json",
 				url: path,
 				success: callback
 			});
 		};
-		this.init();
 	}
 
 	$(document).ready(function () {
 		$("#game").each(function () {
-			new Game(this);
+			var game = new Game(this);
+			game.init();
+			setInterval(game.updateBulletsPosition, 100);
 		});
 
 	});
