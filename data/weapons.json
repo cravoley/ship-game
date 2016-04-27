@@ -1,0 +1,12 @@
+{
+  "single": {
+	"type": "single",
+	"speed": 15,
+	"damage": 1
+  },
+  "missile": {
+	"type": "missile",
+	"speed": 25,
+	"damage": 5
+  }
+}
